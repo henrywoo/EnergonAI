@@ -28,6 +28,11 @@ jobs:
         run: |
           python -m pip --disable-pip-version-check install cibuildwheel==2.9.0 twine==4.0.1
       
+      - name: Install deps
+        if: steps.filter.outputs.energonai == 'true'
+        run: |
+          python -m pip --disable-pip-version-check -r requirements.txt
+
       - uses: docker/setup-qemu-action@v1
         if: runner.os == 'Linux'
         name: Set up QEMU
