@@ -9,6 +9,10 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
+        cuda_version: [11.1, 10.1]
+    container:
+      image: nvidia/cuda:${{ matrix.cuda_version }}-cudnn8-runtime-ubuntu20.04
+
 
     steps:
       - uses: actions/checkout@v2.1.0
@@ -26,17 +30,13 @@ jobs:
       - name: Install cibuildwheel
         if: steps.filter.outputs.energonai == 'true'
         run: |
-          python -m pip --disable-pip-version-check install cibuildwheel==2.9.0 twine==4.0.1
-
-      - uses: docker/setup-qemu-action@v1
-        if: runner.os == 'Linux'
-        name: Set up QEMU
+          python -m pip --disable-pip-version-check install twine
 
       - name: Build wheels
         if: steps.filter.outputs.energonai == 'true'
         run: |
           python -m pip --disable-pip-version-check install -r requirements.txt
-          python -m cibuildwheel --output-dir dist
+          python setup.py bdist_wheel
           twine check ./dist/*.whl
 
       - uses: actions/upload-artifact@v2
