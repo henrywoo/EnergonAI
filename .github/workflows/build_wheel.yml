@@ -16,31 +16,22 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2.1.0
-      - uses: dorny/paths-filter@v2
-        id: filter
-        with:
-          filters: |
-            energonai:
-              - 'energonai/**'
 
       - uses: actions/setup-python@v2
         with:
           python-version: '3.9'
 
-      - name: Install cibuildwheel
-        if: steps.filter.outputs.energonai == 'true'
+      - name: Install twine
         run: |
           python -m pip --disable-pip-version-check install twine
 
       - name: Build wheels
-        if: steps.filter.outputs.energonai == 'true'
         run: |
           python -m pip --disable-pip-version-check install -r requirements.txt
           python setup.py bdist_wheel
           twine check ./dist/*.whl
 
       - uses: actions/upload-artifact@v2
-        if: steps.filter.outputs.energonai == 'true'
         with:
           name: dist
           path: ./dist/*.whl
