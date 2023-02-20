@@ -4,5 +4,4 @@ from .task import TaskEntry
 
 
 __all__ = ['BatchManager', 'launch_engine', 'SubmitEntry', 'TaskEntry', 'QueueFullError']
-
-
+__version__='0.0.1'

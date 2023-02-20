@@ -1,7 +1,7 @@
 import os
 import subprocess
 import sys
-
+import hiq
 import torch
 from setuptools import setup, find_packages
 from torch.utils.cpp_extension import BuildExtension, CUDAExtension, CUDA_HOME
@@ -160,10 +160,52 @@ def get_version():
             version += f'+torch{torch_version}cu{cuda_version}'
         return version
 
+def package_files(ds):
+    paths = []
+    for d in ds:
+        for (path, directories, filenames) in os.walk(d):
+            for filename in filenames:
+                if '__pycache__' not in str(filename):
+                    paths.append(str(os.path.join(path, filename))[len('energonai/'):])
+    return paths
+
+extra_files = package_files(['energonai/'])
+
+print("ext_modules:", ext_modules)
+print("extra_files:", extra_files)
+
+LONG_DESCRIPTION = """
+Energon-AI
+***************************************************************************************************************************************************
+
+A service framework for large-scale model inference, Energon-AI has the following characteristics:
+
+- **Parallelism for Large-scale Models:** With tensor parallel operations, pipeline parallel wrapper, distributed checkpoint loading, and customized CUDA kernel, EnergonAI can enable efficient parallel inference for larges-scale models.
+- **Pre-built large models:** There are pre-built implementation for popular models, such as OPT. It supports the cache technique for the generation task and distributed parameter loading.
+- **Engine encapsulation：** There has an abstraction layer called engine. It encapsulates the single instance multiple devices (SIMD) execution with the remote procedure call, making it acts as the single instance single device (SISD) execution.
+- **An online service system:** Based on FastAPI, users can launch a web service of the distributed infernce quickly. The online service makes special optimizations for the generation task. It adopts both left padding and bucket batching techniques for improving the efficiency.
+
+For models trained by `Colossal-AI <https://github.com/hpcaitech/ColossalAI>`__, they can be easily transferred to Energon-AI.
+For single-device models, they require manual coding works to introduce tensor parallelism and pipeline parallelism.
+
+Installation
+------------------------------------------------------------------------------------------
+
+.. code:: bash
+
+   pip install energonai
+   
+
+Github Repo
+---------------------------------------------------------------------------------------
+
+`https://github.com/hpcaitech/EnergonAI <https://github.com/hpcaitech/EnergonAI>`__ 
+
+"""
 
 setup(
     name='energonai',
-    version=get_version(),
+    version=hiq.read_file('version.txt')[0],
     packages=find_packages(
         exclude=(
             'benchmark',
@@ -173,17 +215,30 @@ setup(
             'examples',
             'tests',
             'scripts',
-            'requirements',
             '*.egg-info',
             'dist',
             'build',
         )),
-    description='Large-scale Model Inference',
+    description='EnergonAI: An Inference System for 10-100 Billion Parameter Transformer Models',
+    long_description=LONG_DESCRIPTION,
     license='Apache Software License 2.0',
     ext_modules=ext_modules,
     cmdclass={'build_ext': BuildExtension} if ext_modules else {},
-    #   install_requires=fetch_requirements('requirements.txt'),
+    install_requires=fetch_requirements('requirements.txt'),
     entry_points={
         'console_scripts': ['energonai=energonai.cli:typer_click_object', ],
     },
+    package_data={"energonai": extra_files, "": ['requirements.txt']},
+    classifiers=[
+        'Operating System :: POSIX :: Linux',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
+        'Programming Language :: Python :: 3.11',
+        'Programming Language :: Python :: Implementation :: CPython',
+        'Programming Language :: Python :: Implementation :: PyPy',
+        'Topic :: Scientific/Engineering :: Artificial Intelligence',
+    ],
 )
