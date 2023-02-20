@@ -8,7 +8,7 @@ from torch.utils.cpp_extension import BuildExtension, CUDAExtension, CUDA_HOME
 
 # ninja build does not work unless include_dirs are abs path
 this_dir = os.path.dirname(os.path.abspath(__file__))
-build_cuda_ext = True
+build_cuda_ext = torch.cuda.is_available()
 
 if '--no_cuda_ext' in sys.argv:
     sys.argv.remove('--no_cuda_ext')
