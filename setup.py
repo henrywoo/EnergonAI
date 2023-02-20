@@ -77,7 +77,7 @@ if not torch.cuda.is_available():
         else:
             os.environ["TORCH_CUDA_ARCH_LIST"] = "6.0;6.1;6.2;7.0;7.5"
 
-print("\n\ntorch.__version__  = {}\n\n".format(torch.__version__))
+print("torch.__version__  = {}".format(torch.__version__))
 TORCH_MAJOR = int(torch.__version__.split('.')[0])
 TORCH_MINOR = int(torch.__version__.split('.')[1])
 
@@ -172,8 +172,8 @@ def package_files(ds):
 
 extra_files = package_files(['energonai/'])
 
-print("ext_modules:", ext_modules)
-print("extra_files:", extra_files)
+#print("ext_modules:", ext_modules)
+#print("extra_files:", extra_files)
 
 LONG_DESCRIPTION = """
 Energon-AI
@@ -205,7 +205,10 @@ Github Repo
 """
 
 setup(
-    name='energon-ai',
+    name='energon',
+    maintainer='Juncong Moo',
+    url='https://github.com/hpcaitech/EnergonAI',
+    maintainer_email='juncongmoo@gmail.com',
     version=hiq.read_file('version.txt')[0],
     packages=find_packages(
         exclude=(
