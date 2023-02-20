@@ -2,8 +2,8 @@ numpy~=1.23.5
 tqdm
 psutil
 packaging
-fastapi
-uvicorn
+fastapi~=0.92.0
+uvicorn~=0.20.0
 typer
 redis
 scipy
