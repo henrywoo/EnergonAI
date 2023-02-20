@@ -16,6 +16,8 @@ if '--no_cuda_ext' in sys.argv:
 
 
 def get_cuda_bare_metal_version(cuda_dir):
+    if cuda_dir is None or not os.path.exists(cuda_dir + "/bin/nvcc"):
+      return [None]*3
     raw_output = subprocess.check_output([cuda_dir + "/bin/nvcc", "-V"], universal_newlines=True)
     output = raw_output.split()
     release_idx = output.index("release") + 1
@@ -68,7 +70,7 @@ if not torch.cuda.is_available():
         'and, if the CUDA version is >= 11.0, Ampere (compute capability 8.0).\n'
         'If you wish to cross-compile for a single specific architecture,\n'
         'export TORCH_CUDA_ARCH_LIST="compute capability" before running setup.py.\n')
-    if os.environ.get("TORCH_CUDA_ARCH_LIST", None) is None:
+    if CUDA_HOME is not None and os.environ.get("TORCH_CUDA_ARCH_LIST", None) is None:
         _, bare_metal_major, _ = get_cuda_bare_metal_version(CUDA_HOME)
         if int(bare_metal_major) == 11:
             os.environ["TORCH_CUDA_ARCH_LIST"] = "6.0;6.1;6.2;7.0;7.5;8.0"
@@ -203,7 +205,7 @@ Github Repo
 """
 
 setup(
-    name='energonai',
+    name='energon-ai',
     version=hiq.read_file('version.txt')[0],
     packages=find_packages(
         exclude=(
